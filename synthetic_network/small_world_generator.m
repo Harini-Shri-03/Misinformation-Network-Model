@@ -6,4 +6,6 @@ n = 50;
 k = 4;
 p = 0.1;
 
+G = graph();
+
 disp('Small-world network implementation will be completed in next phase.');

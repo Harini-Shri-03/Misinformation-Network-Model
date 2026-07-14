@@ -17,9 +17,4 @@ Project Structure:
 - real_world_validation
 - documentation
 
-  ## Weeks 7–8: Intervention Implementation
-
-- Implemented degree centrality
-- Implemented betweenness centrality
-- Applied 5% targeted node removal
-- Compared intervention against baseline
+  

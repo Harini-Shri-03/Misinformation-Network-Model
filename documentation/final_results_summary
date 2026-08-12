@@ -1,0 +1,81 @@
+# Final Results Summary
+
+## 1. WS-4000 Baseline Results
+
+The main synthetic network used for comparison was the Watts–Strogatz network with N = 4000 nodes.
+
+- Average degree = 4.00
+- Clustering coefficient = 0.1764
+- Average path length = 7.5644
+- Infection rate (β) = 0.40
+- Recovery rate (γ) = 0.20
+- Basic reproduction number (R0) = 2.00
+
+### SIR Results
+
+- Average peak infection = 1770.40 nodes
+- 95% CI = [1668.86, 1871.94]
+- Average time to peak = 16.78
+- Average final epidemic size = 3799.32 nodes
+
+## 2. SNAP-4039 Baseline Results
+
+The real-world validation used the SNAP Facebook network containing 4039 nodes and 88234 edges.
+
+The final comparison evaluated the structural properties and SIR spreading behaviour of the SNAP network against the WS-4000 synthetic network.
+
+### Baseline Comparison
+
+| Network | Average Peak | Average Time to Peak | Average Final Size |
+|---|---:|---:|---:|
+| WS-4000 | 1770.40 | 16.78 | 3799.32 |
+| SNAP-4039 | 2538.72 | 6.32 | 3930.82 |
+
+## 3. Network-Size Analysis
+
+Synthetic networks were evaluated for:
+
+- N = 100
+- N = 250
+- N = 500
+- N = 1000
+- N = 2000
+- N = 4000
+
+The absolute number of infected nodes increased with network size, while the percentage of nodes infected at the peak remained broadly stable.
+
+## 4. Network Topology Analysis
+
+The effect of rewiring probability was evaluated using p = 0, 0.3, and 1.
+
+| Rewiring Probability | Average Peak Infection |
+|---:|---:|
+| 0.00 | 12.32 |
+| 0.30 | 1692.72 |
+| 1.00 | 1994.24 |
+
+The results show that increasing network randomness and introducing shortcuts substantially increased the spreading potential.
+
+## 5. Intervention Results
+
+### WS-4000
+
+| Intervention | Peak Reduction | Final Size Reduction |
+|---|---:|---:|
+| Random removal | 8.90% | 3.73% |
+| Degree-based removal | 22.85% | 8.85% |
+| Betweenness-based removal | 26.69% | 14.00% |
+
+### SNAP-4039
+
+| Intervention | Peak Reduction |
+|---|---:|
+| Random removal | 7.18% |
+| Degree-based removal | 24.73% |
+| Betweenness-based removal | 82.88% |
+
+## 6. Main Finding
+
+The final experiments indicate that network structure has a strong influence on misinformation spreading. Betweenness-based node removal produced the largest reduction in peak infection among the evaluated intervention strategies, particularly in the SNAP-4039 network.
+
+These results support the use of network structural information as a complementary approach to content-based misinformation moderation.

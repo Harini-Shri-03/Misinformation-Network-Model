@@ -1,7 +1,7 @@
 clc; clear; close all;
 rng(1);
 
-%% STEP 1: Build Small-World Network (500 Nodes)
+% Build the small-world network
 
 N = 4000;
 K = 2;
@@ -48,13 +48,13 @@ set(gcf,'Color','w');
 plot(G,'NodeColor','k','EdgeColor',[0.6 0.6 0.6]);
 axis off;
 
-%% STEP 2: STRUCTURAL METRICS (500 Nodes)
+% S-2: STRUCTURAL METRICS
 
 % Average Degree
 deg = degree(G);
 avg_degree = mean(deg);
 
-% Clustering Coefficient
+% Clustering Coeff
 A_mat = adjacency(G);
 C = zeros(N,1);
 
@@ -82,7 +82,7 @@ fprintf('Average Degree: %.2f\n', avg_degree);
 fprintf('Clustering Coefficient: %.4f\n', clustering);
 fprintf('Average Path Length: %.4f\n', avg_path);
 
-%% STEP 3: SINGLE SIR SIMULATION (500 Nodes)
+% Run one SIR simulation 
 
 beta = 0.4;
 gamma = 0.2;
@@ -165,9 +165,9 @@ grid on;
 set(gca,'GridColor',[0.85 0.85 0.85],'GridAlpha',0.6);
 box on;
 
-%% STEP 4: MONTE CARLO SIMULATION (500 Nodes)
+% Run Monte Carlo simulations 
 
-numMC = 50;          % number of independent runs
+numMC = 50;          
 peak_values = zeros(numMC,1);
 time_to_peak = zeros(numMC,1);
 final_values = zeros(numMC,1);
@@ -228,7 +228,7 @@ for mc = 1:numMC
 
 end
 
-%% SYNTHETIC MONTE CARLO STATISTICS
+% Calculate Monte Carlo results 
 
 n = numMC;
 
@@ -253,7 +253,7 @@ margin_final = 1.96 * (std_final / sqrt(n));
 CI_final_low = avg_final - margin_final;
 CI_final_high = avg_final + margin_final;
 
-%% CREATE SYNTHETIC RESULTS TABLE
+%% Create results table
 
 Synthetic_Table = table( ...
     avg_peak, std_peak, CI_peak_low, CI_peak_high, ...
@@ -278,7 +278,7 @@ fprintf('Final Epidemic Size = %.2f ± %.2f (95%% CI: [%.2f , %.2f])\n', ...
     avg_final, std_final, CI_final_low, CI_final_high);
 
 
-%% STEP 5: PARAMETER SENSITIVITY (VARY beta)
+%% Check sensitivity to beta
 
 beta_values = [0.2 0.4 0.6];
 numMC = 50;
@@ -367,7 +367,7 @@ for b = 1:length(beta_values)
 
 end
 
-%% Plot Results
+%% Plot the results
 
 figure;
 set(gcf,'Color','w');
@@ -386,7 +386,7 @@ grid on;
 set(gca,'GridColor',[0.85 0.85 0.85],'GridAlpha',0.6);
 box on;
 
-%% STEP 6: R0 Sensitivity Analysis
+%% Check sensitivity to R0
 
 gamma = 0.2;
 beta_R0_values = 0.1:0.1:0.6;   % more detailed range
@@ -439,7 +439,7 @@ for b = 1:length(beta_R0_values)
     avg_peak_R0(b)=mean(peak_values);
 end
 
-%% Plot R0 vs Peak Infection
+%% Plot R0 results
 
 figure;
 set(gcf,'Color','w');
@@ -456,7 +456,7 @@ grid on;
 set(gca,'GridColor',[0.85 0.85 0.85],'GridAlpha',0.6);
 box on;
 
-%% STEP 7: NETWORK TOPOLOGY COMPARISON (VARY p)
+%% Compare different network topologies
 
 beta = 0.4;
 p_values = [0 0.3 1];
@@ -476,7 +476,7 @@ for pp = 1:length(p_values)
         
         
         
-        %% Build Small-World Network for this p
+        %% Build the network for this p
         A = zeros(N);
         
         % Ring lattice
@@ -512,7 +512,7 @@ for pp = 1:length(p_values)
         
         G_temp = graph(A);
         
-        %% Run SIR
+        %% Run the SIR model
         
         S = ones(N,1);
         I = zeros(N,1);
@@ -570,7 +570,7 @@ for pp = 1:length(p_values)
     
 end
 
-%% Plot Results
+%% Plot the results
 figure;
 set(gcf,'Color','w');
 
@@ -604,7 +604,7 @@ for pp = 1:length(p_values)
         p_values(pp), avg_peaks_p(pp), CI_low_p(pp), CI_high_p(pp));
 end
 
-%% STEP 8: CENTRALITY-BASED INTERVENTION
+%% Test node removal strategies
 
 beta = 0.4;
 gamma = 0.2;
@@ -716,7 +716,7 @@ for c = 1:4
     avg_final_case(c)=mean(final_values);
 end
 
-%% Reduction Percentages
+%% Calculate reduction percentages
 
 baseline_peak = avg_peak_case(1);
 baseline_final = avg_final_case(1);
@@ -732,7 +732,7 @@ for c = 2:4
     fprintf('Final Size Reduction = %.2f %%\n\n', final_reduction);
 end
 
-%% Plot Intervention Comparison
+%% Compare the intervention results
 
 figure;
 set(gcf,'Color','w');
@@ -776,7 +776,7 @@ bar(avg_peak_case);
 title('Centrality Intervention');
 xticklabels(cases);
 
-%% STEP 9: NETWORK SIZE ANALYSIS
+%% Check the effect of network size
 
 
 fprintf('\n\n');
@@ -785,9 +785,7 @@ fprintf('        STEP 9: NETWORK SIZE ANALYSIS\n');
 fprintf('=========================================================\n');
 
 
-%% ---------------------------------------------------------
-% STEP 9A: PARAMETERS
-% ---------------------------------------------------------
+%% Set the parameters
 
 rng(1);
 
@@ -809,9 +807,7 @@ numMC = 50;
 numSizes = length(N_values);
 
 
-%% ---------------------------------------------------------
-% STEP 9B: PRE-ALLOCATE RESULTS
-% ---------------------------------------------------------
+%% Set up arrays for the results
 
 % Structural metrics
 avg_degree_size = zeros(numSizes,1);
@@ -833,9 +829,7 @@ avg_final_size = zeros(numSizes,1);
 std_final_size = zeros(numSizes,1);
 
 
-%% ---------------------------------------------------------
-% STEP 9C: LOOP THROUGH NETWORK SIZES
-% ---------------------------------------------------------
+%% Test each network size
 
 for s = 1:numSizes
 
@@ -847,9 +841,7 @@ for s = 1:numSizes
     fprintf('---------------------------------------------------------\n');
 
 
-    %% -----------------------------------------------------
-    % 9C-1: BUILD WATTS-STROGATZ NETWORK
-    % -----------------------------------------------------
+    %% Build the Watts-Strogatz network
 
     A = zeros(N);
 
@@ -912,9 +904,7 @@ for s = 1:numSizes
     G = graph(A);
 
 
-    %% -----------------------------------------------------
-    % 9C-2: CALCULATE STRUCTURAL METRICS
-    % -----------------------------------------------------
+    %% Calculate structural metrics
 
     % Average Degree
     deg = degree(G);
@@ -981,9 +971,7 @@ for s = 1:numSizes
         avg_path_size(s));
 
 
-    %% -----------------------------------------------------
-    % 9C-3: MONTE CARLO SIR SIMULATION
-    % -----------------------------------------------------
+    %% Run the SIR simulations
 
     peak_values = zeros(numMC,1);
 
@@ -1087,9 +1075,7 @@ for s = 1:numSizes
     end
 
 
-    %% -----------------------------------------------------
-    % 9C-4: CALCULATE STATISTICS
-    % -----------------------------------------------------
+    %% Calculate statistics
 
     % Average Peak Infection
     avg_peak_size(s) = mean(peak_values);
@@ -1124,9 +1110,7 @@ for s = 1:numSizes
         std(final_values);
 
 
-    %% -----------------------------------------------------
-    % 9C-5: DISPLAY SIR RESULTS
-    % -----------------------------------------------------
+    %% Display the SIR results
 
     fprintf('\nSIR RESULTS:\n');
 
@@ -1146,9 +1130,7 @@ for s = 1:numSizes
 end
 
 
-%% =========================================================
-% STEP 9D: CALCULATE RELATIVE RESULTS
-% =========================================================
+%% Calculate results as percentages
 
 % Peak infection as percentage of total network
 peak_percent_size = ...
@@ -1160,9 +1142,7 @@ final_percent_size = ...
     (avg_final_size ./ N_values(:)) * 100;
 
 
-%% =========================================================
-% STEP 9E: CREATE FINAL RESULTS TABLE
-% =========================================================
+%% Create the final results table
 
 Network_Size_Table = table( ...
     N_values(:), ...
@@ -1208,403 +1188,8 @@ fprintf('=========================================================\n');
 disp(Network_Size_Table);
 
 
-%% =========================================================
-% STEP 9F: ABSOLUTE PEAK INFECTION
-% =========================================================
-
-figure('Color','w','Position',[100 100 1000 650]);
-
-errorbar( ...
-    N_values, ...
-    avg_peak_size, ...
-    avg_peak_size - CI_low_peak_size, ...
-    CI_high_peak_size - avg_peak_size, ...
-    'ko-', ...
-    'LineWidth',1.8, ...
-    'MarkerSize',8, ...
-    'MarkerFaceColor','k');
-
-
-xlabel('Network Size (N)', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-ylabel('Average Peak Infection', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-title('Effect of Network Size on Peak Infection', ...
-    'FontWeight','bold', ...
-    'FontSize',15, ...
-    'Color','k');
-
-
-ax = gca;
-
-set(ax, ...
-    'Color','w', ...
-    'XColor','k', ...
-    'YColor','k', ...
-    'FontSize',12, ...
-    'FontWeight','bold', ...
-    'LineWidth',1.2);
-
-grid on;
-
-ax.GridColor = [0.85 0.85 0.85];
-ax.GridAlpha = 0.6;
-
-box on;
-
-
-%% =========================================================
-% STEP 9G: RELATIVE PEAK INFECTION
-% =========================================================
-
-figure('Color','w','Position',[100 100 1000 650]);
-
-plot( ...
-    N_values, ...
-    peak_percent_size, ...
-    'ko-', ...
-    'LineWidth',1.8, ...
-    'MarkerSize',8, ...
-    'MarkerFaceColor','k');
-
-
-xlabel('Network Size (N)', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-ylabel('Peak Infection (%)', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-title('Relative Peak Infection vs Network Size', ...
-    'FontWeight','bold', ...
-    'FontSize',15, ...
-    'Color','k');
-
-
-ax = gca;
-
-set(ax, ...
-    'Color','w', ...
-    'XColor','k', ...
-    'YColor','k', ...
-    'FontSize',12, ...
-    'FontWeight','bold', ...
-    'LineWidth',1.2);
-
-grid on;
-
-ax.GridColor = [0.85 0.85 0.85];
-ax.GridAlpha = 0.6;
-
-box on;
-
-
-%% =========================================================
-% STEP 9H: TIME TO PEAK
-% =========================================================
-
-figure('Color','w','Position',[100 100 1000 650]);
-
-plot( ...
-    N_values, ...
-    avg_time_size, ...
-    'ko-', ...
-    'LineWidth',1.8, ...
-    'MarkerSize',8, ...
-    'MarkerFaceColor','k');
-
-
-xlabel('Network Size (N)', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-ylabel('Average Time to Peak', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-title('Effect of Network Size on Time to Peak', ...
-    'FontWeight','bold', ...
-    'FontSize',15, ...
-    'Color','k');
-
-
-ax = gca;
-
-set(ax, ...
-    'Color','w', ...
-    'XColor','k', ...
-    'YColor','k', ...
-    'FontSize',12, ...
-    'FontWeight','bold', ...
-    'LineWidth',1.2);
-
-grid on;
-
-ax.GridColor = [0.85 0.85 0.85];
-ax.GridAlpha = 0.6;
-
-box on;
-
-
-%% =========================================================
-% STEP 9I: ABSOLUTE FINAL EPIDEMIC SIZE
-% =========================================================
-
-figure('Color','w','Position',[100 100 1000 650]);
-
-plot( ...
-    N_values, ...
-    avg_final_size, ...
-    'ko-', ...
-    'LineWidth',1.8, ...
-    'MarkerSize',8, ...
-    'MarkerFaceColor','k');
-
-
-xlabel('Network Size (N)', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-ylabel('Average Final Epidemic Size', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-title('Effect of Network Size on Final Epidemic Size', ...
-    'FontWeight','bold', ...
-    'FontSize',15, ...
-    'Color','k');
-
-
-ax = gca;
-
-set(ax, ...
-    'Color','w', ...
-    'XColor','k', ...
-    'YColor','k', ...
-    'FontSize',12, ...
-    'FontWeight','bold', ...
-    'LineWidth',1.2);
-
-grid on;
-
-ax.GridColor = [0.85 0.85 0.85];
-ax.GridAlpha = 0.6;
-
-box on;
-
-
-%% =========================================================
-% STEP 9J: RELATIVE FINAL EPIDEMIC SIZE
-% =========================================================
-
-figure('Color','w','Position',[100 100 1000 650]);
-
-plot( ...
-    N_values, ...
-    final_percent_size, ...
-    'ko-', ...
-    'LineWidth',1.8, ...
-    'MarkerSize',8, ...
-    'MarkerFaceColor','k');
-
-
-xlabel('Network Size (N)', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-ylabel('Final Epidemic Size (%)', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-title('Relative Final Epidemic Size vs Network Size', ...
-    'FontWeight','bold', ...
-    'FontSize',15, ...
-    'Color','k');
-
-
-ax = gca;
-
-set(ax, ...
-    'Color','w', ...
-    'XColor','k', ...
-    'YColor','k', ...
-    'FontSize',12, ...
-    'FontWeight','bold', ...
-    'LineWidth',1.2);
-
-grid on;
-
-ax.GridColor = [0.85 0.85 0.85];
-ax.GridAlpha = 0.6;
-
-box on;
-
-
-%% =========================================================
-% STEP 9K: CLUSTERING COEFFICIENT
-% =========================================================
-
-figure('Color','w','Position',[100 100 1000 650]);
-
-plot( ...
-    N_values, ...
-    clustering_size, ...
-    'ko-', ...
-    'LineWidth',1.8, ...
-    'MarkerSize',8, ...
-    'MarkerFaceColor','k');
-
-
-xlabel('Network Size (N)', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-ylabel('Clustering Coefficient', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-title('Clustering Coefficient vs Network Size', ...
-    'FontWeight','bold', ...
-    'FontSize',15, ...
-    'Color','k');
-
-
-ax = gca;
-
-set(ax, ...
-    'Color','w', ...
-    'XColor','k', ...
-    'YColor','k', ...
-    'FontSize',12, ...
-    'FontWeight','bold', ...
-    'LineWidth',1.2);
-
-grid on;
-
-ax.GridColor = [0.85 0.85 0.85];
-ax.GridAlpha = 0.6;
-
-box on;
-
-
-%% =========================================================
-% STEP 9L: AVERAGE PATH LENGTH
-% =========================================================
-
-figure('Color','w','Position',[100 100 1000 650]);
-
-plot( ...
-    N_values, ...
-    avg_path_size, ...
-    'ko-', ...
-    'LineWidth',1.8, ...
-    'MarkerSize',8, ...
-    'MarkerFaceColor','k');
-
-
-xlabel('Network Size (N)', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-ylabel('Average Path Length', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-title('Average Path Length vs Network Size', ...
-    'FontWeight','bold', ...
-    'FontSize',15, ...
-    'Color','k');
-
-
-ax = gca;
-
-set(ax, ...
-    'Color','w', ...
-    'XColor','k', ...
-    'YColor','k', ...
-    'FontSize',12, ...
-    'FontWeight','bold', ...
-    'LineWidth',1.2);
-
-grid on;
-
-ax.GridColor = [0.85 0.85 0.85];
-ax.GridAlpha = 0.6;
-
-box on;
-
-
-%% =========================================================
-% STEP 9M: AVERAGE DEGREE
-% =========================================================
-
-figure('Color','w','Position',[100 100 1000 650]);
-
-plot( ...
-    N_values, ...
-    avg_degree_size, ...
-    'ko-', ...
-    'LineWidth',1.8, ...
-    'MarkerSize',8, ...
-    'MarkerFaceColor','k');
-
-
-xlabel('Network Size (N)', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-ylabel('Average Degree', ...
-    'FontWeight','bold', ...
-    'FontSize',13, ...
-    'Color','k');
-
-title('Average Degree vs Network Size', ...
-    'FontWeight','bold', ...
-    'FontSize',15, ...
-    'Color','k');
-
-
-ax = gca;
-
-set(ax, ...
-    'Color','w', ...
-    'XColor','k', ...
-    'YColor','k', ...
-    'FontSize',12, ...
-    'FontWeight','bold', ...
-    'LineWidth',1.2);
-
-grid on;
-
-ax.GridColor = [0.85 0.85 0.85];
-ax.GridAlpha = 0.6;
-
-box on;
-
-
-%% =========================================================
-% STEP 9N: SAVE RESULTS
-% =========================================================
+%% Network size results
+% The network size results are already collected in the table.
 
 writetable( ...
     Network_Size_Table, ...

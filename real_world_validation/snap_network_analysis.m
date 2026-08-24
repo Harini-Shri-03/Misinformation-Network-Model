@@ -2,7 +2,7 @@ clc; clear; close all;
 
 rng(1);
 
-% ===== FORCE IEEE WHITE STYLE =====
+% Set the figure style
 set(groot,'defaultFigureColor','w');
 set(groot,'defaultAxesColor','w');
 set(groot,'defaultAxesXColor','k');
@@ -12,7 +12,7 @@ set(groot,'defaultAxesFontSize',11);
 set(groot,'defaultAxesFontWeight','normal');
 set(groot,'defaultLineLineWidth',1.5);
 
-%% LOAD SNAP DATASET
+%% Load the SNAP dataset
 
 edges = load('facebook_combined.txt');
 
@@ -24,7 +24,7 @@ fprintf('\n=== SNAP NETWORK INFO ===\n');
 fprintf('Number of Nodes: %d\n', numnodes(G_snap));
 fprintf('Number of Edges: %d\n', numedges(G_snap));
 
-%% SNAP STRUCTURAL METRICS
+%% Calculate SNAP network metrics
 
 % Average Degree
 deg_snap = degree(G_snap);
@@ -58,7 +58,7 @@ fprintf('Average Degree: %.2f\n', avg_deg_snap);
 fprintf('Clustering Coefficient: %.4f\n', clustering_snap);
 fprintf('Average Path Length: %.4f\n', avg_path_snap);
 
-%% SNAP SIR SIMULATION (Full SIR Curves)
+%% Run SIR on the SNAP network
 
 beta = 0.4;
 gamma = 0.2;
@@ -136,17 +136,17 @@ plot(S_curve,'k-','LineWidth',1.8);
 plot(I_curve,'k--','LineWidth',1.8);
 plot(R_curve,'k:','LineWidth',1.8);
 
-% Strong visible legend
+% Show the SIR legend
 lgd = legend({'Susceptible','Infected','Recovered'}, ...
     'Location','northeast');
 set(lgd,'TextColor','k','FontSize',11);
 legend boxoff;
 
-% Bold axis labels
+% Axis labels
 xlabel('Time Step','FontSize',13,'FontWeight','bold','Color','k');
 ylabel('Number of Nodes','FontSize',13,'FontWeight','bold','Color','k');
 
-% Clean axes
+% Set the axes
 set(gca,...
     'Color','w',...
     'XColor','k',...
@@ -159,7 +159,7 @@ set(gca,'GridColor',[0.85 0.85 0.85]);
 set(gca,'GridAlpha',0.6);
 
 box on;
-%% SNAP MONTE CARLO SIMULATION
+%% Run the SNAP Monte Carlo simulation
 
 beta = 0.4;
 gamma = 0.2;
@@ -176,7 +176,7 @@ N_snap = numnodes(G_snap);
 
 for mc = 1:numMC
 
-   
+
 
     S = ones(N_snap,1);
     I = zeros(N_snap,1);
@@ -228,25 +228,25 @@ t = t + 1;
 
 end
 
-%% SNAP MONTE CARLO STATISTICS
+%% Calculate SNAP Monte Carlo statistics
 
 n = numMC;
 
-% ---- Peak ----
+% Peak
 avg_peak_snap = mean(peak_snap);
 std_peak_snap = std(peak_snap);
 margin_peak_snap = 1.96 * (std_peak_snap / sqrt(n));
 CI_peak_low_snap = avg_peak_snap - margin_peak_snap;
 CI_peak_high_snap = avg_peak_snap + margin_peak_snap;
 
-% ---- Time to Peak ----
+% Time to Peak
 avg_time_snap = mean(time_snap);
 std_time_snap = std(time_snap);
 margin_time_snap = 1.96 * (std_time_snap / sqrt(n));
 CI_time_low_snap = avg_time_snap - margin_time_snap;
 CI_time_high_snap = avg_time_snap + margin_time_snap;
 
-% ---- Final Size ----
+% Final Size
 avg_final_snap = mean(final_snap);
 std_final_snap = std(final_snap);
 margin_final_snap = 1.96 * (std_final_snap / sqrt(n));
@@ -263,7 +263,7 @@ fprintf('Time to Peak = %.2f ± %.2f (95%% CI: [%.2f , %.2f])\n', ...
 fprintf('Final Epidemic Size = %.2f ± %.2f (95%% CI: [%.2f , %.2f])\n', ...
     avg_final_snap, std_final_snap, CI_final_low_snap, CI_final_high_snap);
 
-%% CREATE SNAP RESULTS TABLE
+%% Create the SNAP results table
 
 SNAP_Table = table( ...
     avg_peak_snap, std_peak_snap, CI_peak_low_snap, CI_peak_high_snap, ...
@@ -278,7 +278,7 @@ SNAP_Table.Properties.VariableNames = { ...
 disp(SNAP_Table);
 
 
-%% SNAP CENTRALITY ANALYSIS
+%% Find important SNAP nodes
 
 deg_vals = degree(G_snap);
 [max_deg, node_deg] = max(deg_vals);
@@ -290,7 +290,7 @@ fprintf('\n=== SNAP CENTRALITY ===\n');
 fprintf('Highest Degree Node: %d (Degree = %d)\n', node_deg, max_deg);
 fprintf('Highest Betweenness Node: %d (Value = %.2f)\n', node_bet, max_bet);
 
-%% SNAP CENTRALITY-BASED INTERVENTION
+%% Test different centrality interventions
 
 beta = 0.4;
 gamma = 0.2;
@@ -306,17 +306,17 @@ CI_low_snap_case = zeros(4,1);
 CI_high_snap_case = zeros(4,1);
 
 for c = 1:4
-    
+
     peak_values = zeros(numMC,1);
-    
+
     for mc = 1:numMC
-        
-        
+
+
         G_temp = G_snap;
-        
-        % --- Apply removal strategy ---
+
+        % Apply the selected removal strategy
         nodes_to_remove = [];
-        
+
         if c == 2
             nodes_to_remove = randperm(numnodes(G_temp), num_remove);
         elseif c == 3
@@ -328,67 +328,67 @@ for c = 1:4
             [~, idx] = sort(bet_vals,'descend');
             nodes_to_remove = idx(1:num_remove);
         end
-        
+
         if c ~= 1
             G_temp = rmnode(G_temp, nodes_to_remove);
         end
-        
+
         N_mod = numnodes(G_temp);
-        
+
         % Run SIR
         S = ones(N_mod,1);
         I = zeros(N_mod,1);
         R = zeros(N_mod,1);
-        
+
         initial = randi(N_mod);
         S(initial) = 0;
         I(initial) = 1;
-        
+
         peakI = 0;
-        
+
         while any(I)
-            
+
             newI = I;
             newR = R;
-            
+
             for i = 1:N_mod
                 if I(i) == 1
                     neighbors_i = neighbors(G_temp,i);
-                    
+
                     for nb = neighbors_i'
                         if S(nb) == 1 && rand < beta
                             newI(nb) = 1;
                             S(nb) = 0;
                         end
                     end
-                    
+
                     if rand < gamma
                         newI(i) = 0;
                         newR(i) = 1;
                     end
                 end
             end
-            
+
             I = newI;
             R = newR;
-            
+
             peakI = max(peakI, sum(I));
         end
-        
+
         peak_values(mc) = peakI;
-        
+
     end
-    
+
     avg_peak_snap_case(c) = mean(peak_values);
     std_snap_case = std(peak_values);
     margin = 1.96 * (std_snap_case / sqrt(numMC));
-    
+
     CI_low_snap_case(c) = avg_peak_snap_case(c) - margin;
     CI_high_snap_case(c) = avg_peak_snap_case(c) + margin;
-    
+
 end
 
-%% COLORED BAR CHART
+%% Plot the intervention comparison
 
 figure;
 set(gcf,'Color','w');
@@ -409,7 +409,7 @@ xticks(1:4)
 xticklabels({'None','Random','Degree','Betweenness'})
 set(gca,'FontWeight','bold')
 
-% Bold axis label
+% Axis label
 ylabel('Average Peak Infection',...
     'FontSize',13,...
     'FontWeight','bold',...
@@ -427,7 +427,7 @@ set(gca,'GridColor',[0.85 0.85 0.85]);
 set(gca,'GridAlpha',0.6);
 
 box on;
-%% SNAP CENTRALITY TABLE
+%% Create the SNAP centrality table
 
 SNAP_Centrality_Table = table(cases', avg_peak_snap_case);
 
@@ -436,7 +436,7 @@ SNAP_Centrality_Table.Properties.VariableNames = ...
 
 disp(SNAP_Centrality_Table);
 
-%% SAVE SNAP RESULTS FOR STEP 10 COMPARISON
+%% Save the SNAP results for comparison
 
 SNAP_Comparison_Table = table( ...
     N_snap, ...
